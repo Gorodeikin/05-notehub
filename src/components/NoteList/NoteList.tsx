@@ -24,11 +24,11 @@ export default function NoteList({ page, search }: NoteListProps) {
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading notes</p>;
-  if (!data?.data?.length) return <p>No notes found</p>;
+  if (!data?.notes?.length) return <p>No notes found</p>;
 
   return (
     <ul className={css.list}>
-      {data.data.map((note) => (
+      {data.notes.map((note) => (
         <li key={note.id} className={css.listItem}>
           <h2 className={css.title}>{note.title}</h2>
           <p className={css.content}>{note.content}</p>
