@@ -4,13 +4,13 @@ import css from "./Pagination.module.css";
 interface PaginationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
-  totalPages?: number;
+  totalPages: number;
 }
 
 export default function Pagination({
   currentPage,
   onPageChange,
-  totalPages = 5,
+  totalPages,
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
@@ -19,10 +19,10 @@ export default function Pagination({
       className={css.pagination}
       breakLabel="..."
       nextLabel=">"
-      onPageChange={(selected) => onPageChange(selected.selected + 1)}
+      previousLabel="<"
       pageRangeDisplayed={3}
       pageCount={totalPages}
-      previousLabel="<"
+      onPageChange={(selected) => onPageChange(selected.selected + 1)}
       forcePage={currentPage - 1}
     />
   );

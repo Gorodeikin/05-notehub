@@ -20,17 +20,19 @@ export interface FetchNotesParams {
 
 export interface FetchNotesResponse {
   notes: Note[];
+  totalPages: number;
+}
+
+export interface NormalizedFetchNotesResponse extends FetchNotesResponse {
   page: number;
   perPage: number;
-  totalPages: number;
-  totalItems: number;
 }
 
 export async function fetchNotes({
   page = 1,
   perPage = 12,
   search = "",
-}: FetchNotesParams): Promise<FetchNotesResponse> {
+}: FetchNotesParams): Promise<NormalizedFetchNotesResponse> {
   const params = new URLSearchParams();
   params.append("page", String(page));
   params.append("perPage", String(perPage));
@@ -39,7 +41,12 @@ export async function fetchNotes({
   const res: AxiosResponse<FetchNotesResponse> = await api.get(
     `/notes?${params.toString()}`
   );
-  return res.data;
+
+  return {
+    ...res.data,
+    page,
+    perPage,
+  };
 }
 
 export async function createNote(
@@ -49,7 +56,7 @@ export async function createNote(
   return res.data;
 }
 
-export async function deleteNote(id: string): Promise<Note> {
+export async function deleteNote(id: number): Promise<Note> {
   const res: AxiosResponse<Note> = await api.delete(`/notes/${id}`);
   return res.data;
 }
