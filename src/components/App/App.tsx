@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import css from "./App.module.css";
 
 import NoteList from "../NoteList/NoteList";
@@ -9,7 +9,7 @@ import SearchBox from "../SearchBox/SearchBox";
 import Modal from "../Modal/Modal";
 import { useDebounce } from "use-debounce";
 
-import { fetchNotes, deleteNote } from "../../services/noteService";
+import { fetchNotes } from "../../services/noteService";
 import type { NormalizedFetchNotesResponse } from "../../services/noteService";
 
 export default function App() {
@@ -17,10 +17,7 @@ export default function App() {
   const [search, setSearch] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // debounce поиска
   const [debouncedSearch] = useDebounce(search, 500);
-
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     setPage(1);
@@ -35,13 +32,6 @@ export default function App() {
     queryKey: ["notes", page, debouncedSearch],
     queryFn: () => fetchNotes({ page, perPage: 12, search: debouncedSearch }),
     placeholderData: keepPreviousData, 
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"], exact: false });
-    },
   });
 
   const notes = data?.notes ?? [];
@@ -67,10 +57,7 @@ export default function App() {
       {isError && <p>Error loading notes</p>}
 
       {!isLoading && !isError && (
-        <NoteList
-          notes={notes}
-          onDelete={(id: number) => deleteMutation.mutate(id)}
-        />
+        <NoteList notes={notes} />
       )}
 
       {totalPages > 1 && (
